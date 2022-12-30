@@ -73,7 +73,7 @@ pub async fn api(id: &str) -> Result<ViewRsp> {
     let view_req = ViewReq {id: video_id};
 
     let response = CLIENT
-        .get::<_, _, Response<ViewRsp>>(API_VIEW, &view_req)
+        .get_struct::<_, _, Response<ViewRsp>>(API_VIEW, &view_req, None)
         .await?;
 
     if response.code != 0 {
@@ -87,9 +87,7 @@ pub async fn api(id: &str) -> Result<ViewRsp> {
 async fn api_test() {
     let res = api("BV12g411r7mB").await.unwrap();
     assert_eq!(&res.title, "【鹿乃×こはならむ】翻唱《ねぇねぇねぇ（呐呐呐。 ）》");
-    
+
     let res = api("av600924585").await.unwrap();
     assert_eq!(&res.owner.name, "影视飓风");
-
-    println!("{res:?}");
 }

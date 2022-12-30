@@ -1,7 +1,7 @@
 
 use clap::Parser;
 use once_cell::sync::Lazy;
-use reqwest::header::{HeaderMap, self};
+use reqwest::header::{HeaderMap, self, HeaderValue};
 
 use crate::config::{ConfigBuilder, ConfigItems};
 
@@ -54,10 +54,8 @@ pub static CONFIG: Lazy<ConfigItems> = Lazy::new(|| {
         .build()
 });
 
-pub static DEFAULT_HEADER: Lazy<HeaderMap> = Lazy::new(|| {
+pub static SESSION: Lazy<HeaderMap> = Lazy::new(|| {
     let mut headers = HeaderMap::new();
-    headers.insert(header::COOKIE, header::HeaderValue::from_str(&format!("SESSDATA={}", CONFIG.session())).unwrap());
-    headers.insert(header::REFERER, header::HeaderValue::from_static("https://www.bilibili.com"));
-    headers.insert(header::USER_AGENT, header::HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"));
+    headers.insert(header::COOKIE, HeaderValue::from_str(&format!("SESSDATA={}", CONFIG.session())).unwrap());
     headers
 });

@@ -3,6 +3,9 @@ use std::time::Instant;
 use anyhow::Result;
 use log::error;
 use log::info;
+use reqwest::header;
+use reqwest::header::HeaderMap;
+use reqwest::header::HeaderValue;
 use tokio::join;
 use tokio::sync::mpsc;
 
@@ -13,6 +16,7 @@ use vl::catcher::link;
 use vl::loader::load;
 use vl::transfer;
 
+use crate::parse::SESSION;
 use crate::util::safe_filename;
 
 mod config;
@@ -33,7 +37,7 @@ async fn run_one_by_one(index: usize, id: &str, tx: Sender<Context>) -> Result<(
    .await?;
 
    // Get audio link.
-   let link = link::api(&view.bvid, view.pages[0].cid, 16 | 256)
+   let link = link::api(&view.bvid, view.pages[0].cid, 16 | 256, Some(SESSION.clone()))
        .await?;
    
    // Download audio.
@@ -104,11 +108,13 @@ pub async fn run() {
 
             if !source.exists() {
                 error!("[{}] Source file not exists.", context.index);
+                let _ = std::fs::remove_file(source);
                 continue;
             }
 
             if output.exists() {
                 error!("[{}] Output file already exists.", context.index);
+                let _ = std::fs::remove_file(source);
                 continue;
             }
 

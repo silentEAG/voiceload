@@ -46,21 +46,21 @@ pub struct LinkRsp {
     pub dash: Dash
 }
 
-pub async fn api(bvid: &str, cid: usize, fnval: usize) -> Result<LinkRsp> {
+pub async fn api(bvid: &str, cid: usize, fnval: usize, headers: Option<HeaderMap>) -> Result<LinkRsp> {
     let link_req = LinkReq {
         bvid,
         cid,
         fnval
     };
     let response = CLIENT
-        .get::<_, _, Response<LinkRsp>>(API_PLAYURL, &link_req)
+        .get_struct::<_, _, Response<LinkRsp>>(API_PLAYURL, &link_req, headers)
         .await.unwrap();
     Ok(response.data)
 }
 
 #[tokio::test]
 async fn api_test() {
-    let res = api("BV1fB4y1h76Z", 773130617, 16 | 256).await.unwrap();
+    let res = api("BV1fB4y1h76Z", 773130617, 16 | 256, None).await.unwrap();
     // for x in res.dash.audio {
     //     let code = x.id;
     //     let url = x.base_url;
