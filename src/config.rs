@@ -214,6 +214,8 @@ generate_config! {
     flac_allowed: bool, true, def, false;
     /// Allow downloading dolby.
     dolby_allowed: bool, true, def, false;
+    /// Allow adding picture to audio.
+    pic_allowed: bool, true, def, false;
     /// Path to save audio files.
     path: String, true, def, "./".to_string();
     /// File name.

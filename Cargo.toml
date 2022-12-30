@@ -2,8 +2,8 @@
 name = "voiceload"
 version = "0.1.0"
 edition = "2021"
-auth = "SilentE <silenteags@gmail.com>"
-about = "A simple cli tool for downloading audio in bilibili."
+authors = ["SilentE <silenteags@gmail.com>"]
+description = "A simple cli tool for downloading audio in bilibili."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

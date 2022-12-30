@@ -1,5 +1,4 @@
 use anyhow::Result;
-use reqwest::header::HeaderMap;
 use serde::{Serialize, Deserialize};
 
 use crate::common::CLIENT;
@@ -87,6 +86,7 @@ pub async fn api(id: &str) -> Result<ViewRsp> {
 async fn api_test() {
     let res = api("BV12g411r7mB").await.unwrap();
     assert_eq!(&res.title, "【鹿乃×こはならむ】翻唱《ねぇねぇねぇ（呐呐呐。 ）》");
+    println!("{}",res.pic);
 
     let res = api("av600924585").await.unwrap();
     assert_eq!(&res.owner.name, "影视飓风");

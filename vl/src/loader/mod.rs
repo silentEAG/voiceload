@@ -2,7 +2,7 @@ use std::{time::Instant, io::SeekFrom};
 
 use anyhow::Result;
 use futures::StreamExt;
-use log::trace;
+use log::debug;
 use reqwest::header;
 use tokio::fs::File;
 use tokio::io::AsyncSeekExt;
@@ -16,8 +16,6 @@ use tokio::sync::Mutex;
 
 use crate::common::CLIENT;
 
-
-/// 通过 `HEAD` 请求获取文件大小以及是否支持 `ACCEPT_RANGES` 请求
 async fn judge(url: &str) -> Result<(u64, bool)> {
     let headers = CLIENT
         .head(url)
@@ -106,11 +104,11 @@ async fn fetch_muti<U:  IntoUrl>(url: U, content_length: u64, file: File) -> Res
     Ok(())
 }
 
-pub async fn load(url: &str, filename: &str, path: &str) -> Result<()> {
+pub async fn load(url: &str, filename: &str, path: &str, extension: &str) -> Result<()> {
     let (content_length, can_muti) = judge(url).await?;
     let start = Instant::now();
 
-    let filename = PathBuf::from(path).join(filename).with_extension("m4s");
+    let filename = PathBuf::from(path).join(filename).with_extension(extension);
 
     let file = File::create(filename).await?;
     match can_muti {
@@ -118,17 +116,6 @@ pub async fn load(url: &str, filename: &str, path: &str) -> Result<()> {
         false => fetch_one(url, file).await?
     };
 
-    // audio file size 98,999 KB
-
-    // 12-core muti Time costs: 4.2598857s 4.9019898s 4.3838892s
-    // 8-core muti Time costs: 4.5588841s 4.7504758s 3.8241354s
-    // one Time costs: 6.6017306s 6.4260981s 6.5925249s
-    trace!("Download time costs: {:?}", start.elapsed());
+    debug!("Download time costs: {:?}", start.elapsed());
     Ok(())
 }
-
-// #[tokio::test]
-// async fn test_load() {
-//     let res = crate::catcher::link::api("BV1fB4y1h76Z", 773130617, 16 | 256).await.unwrap();
-//     load(&res.dash.flac.unwrap().audio.base_url, "test", "./").await.unwrap();
-// }

@@ -1,7 +1,7 @@
 use bytes::Bytes;
 use futures::Stream;
 use once_cell::sync::Lazy;
-use reqwest::{Url, header::{self, HeaderMap}, Error, IntoUrl, Method, Response};
+use reqwest::{header::{self, HeaderMap}, Error, IntoUrl, Method, Response};
 use serde::{Serialize, Deserialize};
 use anyhow::{Result, Context};
 

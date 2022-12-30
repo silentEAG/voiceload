@@ -1,11 +1,9 @@
 use std::path::PathBuf;
+use std::time::Duration;
 use std::time::Instant;
 use anyhow::Result;
 use log::error;
 use log::info;
-use reqwest::header;
-use reqwest::header::HeaderMap;
-use reqwest::header::HeaderValue;
 use tokio::join;
 use tokio::sync::mpsc;
 
@@ -26,7 +24,7 @@ mod util;
 #[derive(PartialEq)]
 enum Audio {
     Flac,
-    MP4
+    M4a
 }
 
 async fn run_one_by_one(index: usize, id: &str, tx: Sender<Context>) -> Result<()> {
@@ -50,7 +48,7 @@ async fn run_one_by_one(index: usize, id: &str, tx: Sender<Context>) -> Result<(
    let filename = safe_filename(&filename);
 
    // Set default audio type.
-   let mut audio_type = Audio::MP4;
+   let mut audio_type = Audio::M4a;
    let mut load_url = link.dash.audio[0].base_url.to_string();
 
    if CONFIG.flac_allowed() {
@@ -60,7 +58,13 @@ async fn run_one_by_one(index: usize, id: &str, tx: Sender<Context>) -> Result<(
         }
    }
 
-   load(&load_url, &filename, &CONFIG.path()).await?;
+   load(&load_url, &filename, &CONFIG.path(), "m4s").await?;
+
+
+   if CONFIG.pic_allowed() {
+        load(&view.pic, &filename, &CONFIG.path(), "jpg").await?;
+   }
+
 
    // Preparing for transform audio.
    let context = Context {
@@ -97,7 +101,7 @@ pub async fn run() {
             info!("[{}] starting transform '{}'", context.index, context.filename);
 
             let extension = match context.audio {
-                Audio::MP4 => "mp4",
+                Audio::M4a => "m4a",
                 Audio::Flac => "flac"
             };
 
@@ -108,24 +112,40 @@ pub async fn run() {
 
             if !source.exists() {
                 error!("[{}] Source file not exists.", context.index);
-                let _ = std::fs::remove_file(source);
+                let _ = std::fs::remove_file(source.clone());
+                if CONFIG.pic_allowed() {
+                    let _ = std::fs::remove_file(source.with_extension("jpg"));
+                }
                 continue;
             }
 
             if output.exists() {
                 error!("[{}] Output file already exists.", context.index);
-                let _ = std::fs::remove_file(source);
+                let _ = std::fs::remove_file(source.clone());
+                if CONFIG.pic_allowed() {
+                    let _ = std::fs::remove_file(source.with_extension("jpg"));
+                }
                 continue;
             }
+
+            let pic = source.with_extension("jpg");
+            let pic = match CONFIG.pic_allowed() {
+                true => pic.to_str(),
+                false => None
+            };
 
             if let Err(e) = transfer::run(
                 source.to_str().unwrap(),
                 output.to_str().unwrap(),
+                pic,
                 extension, &context.filename, &context.owner).await {
                     error!("[{}] {e}", context.index);
             }
 
-            let _ = std::fs::remove_file(source);
+            let _ = std::fs::remove_file(source.clone());
+            if CONFIG.pic_allowed() {
+                let _ = std::fs::remove_file(source.with_extension("jpg"));
+            }
             info!("[{}] finishing transforming '{}'", context.index, context.filename);
         };
     });
@@ -146,7 +166,8 @@ pub async fn run() {
     
 }
 
-fn summary() {
+fn summary(cost: Duration) {
+    info!("total costs: {:?}", cost);
 
 }
 
@@ -154,7 +175,6 @@ fn summary() {
 async fn main() {
     let total_cost = Instant::now();
     simple_logger::init_with_level(log::Level::Debug).unwrap();
-    // let args = Args::parse();
     run().await;
-    
+    summary(total_cost.elapsed());
 }

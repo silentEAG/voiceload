@@ -9,7 +9,7 @@ use crate::config::{ConfigBuilder, ConfigItems};
 #[command(name = "bili-voiceload", author, version, about, long_about = None)]
 pub struct Args {
 
-    /// Aid/Bvids to download, space for split.
+    /// Aid/Bvids to download, can be multiple.
     #[arg(short, long)]
     id: Vec<String>,
    
@@ -20,6 +20,10 @@ pub struct Args {
     /// Allow downloading dolby, false as default.
     #[arg(short = 'D', long)]
     dolby_allowed: Option<bool>,
+
+    /// Allow adding picture to audio, false as default.
+    #[arg(short = 'P', long)]
+    picture_allowed: Option<bool>,
 
     /// Path to save audio files, current dir as default.
     #[arg(short, long)]
@@ -47,6 +51,7 @@ pub static CONFIG: Lazy<ConfigItems> = Lazy::new(|| {
         // Parsing args
         .dolby_allowed(args.dolby_allowed)
         .flac_allowed(args.flac_allowed)
+        .pic_allowed(args.picture_allowed)
         .filename(args.filename)
         .path(args.path)
         .session(args.session)
