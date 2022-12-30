@@ -1,0 +1,25 @@
+[package]
+name = "voiceload"
+version = "0.1.0"
+edition = "2021"
+auth = "SilentE <silenteags@gmail.com>"
+about = "A simple cli tool for downloading audio in bilibili."
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+members = ["./", "vl"]
+
+[dependencies]
+once_cell = "1.16.0"
+reqwest = "0.11.13"
+clap = { version = "4.0.32", features = ["derive"] }
+vl = { path = "./vl" }
+futures = "0.3.25"
+anyhow = "1.0"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.23.0", features = ["full"] }
+log = "0.4"
+simple_logger = "4.0.0"
+regex = "1.7.0"
