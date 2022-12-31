@@ -167,14 +167,14 @@ pub async fn run() {
 }
 
 fn summary(cost: Duration) {
-    info!("total costs: {:?}", cost);
+    info!("Total costs: {:?}", cost);
 
 }
 
 #[tokio::main]
 async fn main() {
     let total_cost = Instant::now();
-    simple_logger::init_with_level(log::Level::Debug).unwrap();
+    simple_logger::init_with_level(log::Level::Info).unwrap();
     run().await;
     summary(total_cost.elapsed());
 }

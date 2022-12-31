@@ -34,6 +34,8 @@ macro_rules! generate_config {
         }
 
         use core::fmt::Display;
+        use log::error;
+
         impl Display for ConfigItems {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
                 $(
@@ -122,7 +124,11 @@ macro_rules! generate_config {
 
             pub fn from_file(path: &str) -> anyhow::Result<Self> {
                 let mut cfg: ConfigBuilder = ConfigBuilder::new();
+                use std::path::PathBuf;
                 use crate::util::read_file_string;
+                if !PathBuf::from(path).exists() {
+                    return Err(anyhow::Error::msg("File not exists"));
+                }
                 let config_str = read_file_string(path).expect("Read file failed.");
                 let items: BuilderItems = serde_json::from_str(&config_str)?;
                 $(
@@ -158,8 +164,10 @@ macro_rules! generate_config {
             }
 
             pub fn add_file(mut self, path: &str) -> Self {
-                let cfg = ConfigBuilder::from_file(path).unwrap();
-                self.merge(cfg);
+                match ConfigBuilder::from_file(path) {
+                    Ok(cfg) => self.merge(cfg),
+                    Err(e) => error!("{e}")
+                };
                 self
             }
 

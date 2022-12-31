@@ -1,6 +1,5 @@
 /target
 /audio
-/backup.txt
 /test.txt
-/trueup.txt
+/config.json
 /ffmpeg.exe

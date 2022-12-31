@@ -1,4 +1,6 @@
 
+
+
 use clap::Parser;
 use once_cell::sync::Lazy;
 use reqwest::header::{HeaderMap, self, HeaderValue};
@@ -9,33 +11,37 @@ use crate::config::{ConfigBuilder, ConfigItems};
 #[command(name = "bili-voiceload", author, version, about, long_about = None)]
 pub struct Args {
 
-    /// Aid/Bvids to download, can be multiple.
+    /// Aid/Bvids to download, can be multiple
     #[arg(short, long)]
     id: Vec<String>,
    
-    /// Allow downloading flac, false as default.
+    /// Allow downloading flac [default: false]
     #[arg(short = 'F', long)]
     flac_allowed: Option<bool>,
 
-    /// Allow downloading dolby, false as default.
+    /// Allow downloading dolby [default: false]
     #[arg(short = 'D', long)]
     dolby_allowed: Option<bool>,
 
-    /// Allow adding picture to audio, false as default.
+    /// Allow adding picture to audio [default: false]
     #[arg(short = 'P', long)]
     picture_allowed: Option<bool>,
 
-    /// Path to save audio files, current dir as default.
+    /// Path to save audio files, [default: ./]
     #[arg(short, long)]
     path: Option<String>,
 
-    /// (Optional) Filename to save. the title of audio as default.
+    /// (Optional) Filename to save [default: the title of the audio]
     #[arg(short = 'o')]
     filename: Option<String>,
 
-    /// (Optional) Sessiondata for login aiming to dolby or flac.
+    /// (Optional) Sessiondata for login aiming to dolby or flac [default: None]
     #[arg(short, long)]
-    session: Option<String>
+    session: Option<String>,
+
+    /// (Optional) Config file path
+    #[arg(short, long, default_value = "./config.json")]
+    config: String
 }
 
 pub static CONFIG: Lazy<ConfigItems> = Lazy::new(|| {
@@ -47,8 +53,8 @@ pub static CONFIG: Lazy<ConfigItems> = Lazy::new(|| {
 
     ConfigBuilder::default()
         // Parsing file
-        // .add_file("./config.json")
-        // Parsing args
+        .add_file(&args.config)
+        // Parsing args   
         .dolby_allowed(args.dolby_allowed)
         .flac_allowed(args.flac_allowed)
         .pic_allowed(args.picture_allowed)
