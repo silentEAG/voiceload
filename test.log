@@ -1,0 +1,49 @@
+2023-01-01T06:25:45.372Z INFO  [voiceload::parse] Starting to get file input
+2023-01-01T06:25:45.372Z INFO  [voiceload::parse] Input total: 7
+2023-01-01T06:25:45.372Z INFO  [voiceload::parse] Starting to parse inputs
+2023-01-01T06:25:45.561Z INFO  [voiceload::parse] Succeed to parse: 7
+2023-01-01T06:25:45.561Z INFO  [voiceload] You have already set account session, can download flac/dolby if supports
+2023-01-01T06:25:45.562Z INFO  [voiceload] [0] bvid = BV1YM411U73a starting to work
+2023-01-01T06:25:45.562Z INFO  [voiceload] [0] Get information about BV1YM411U73a
+2023-01-01T06:25:45.773Z INFO  [voiceload] [0] Downloading BV1YM411U73a
+2023-01-01T06:25:46.941Z INFO  [voiceload] [0] id = BV1YM411U73a finish download
+2023-01-01T06:25:46.941Z INFO  [voiceload] [1] bvid = av600924585 starting to work
+2023-01-01T06:25:46.941Z INFO  [voiceload] [0] Starting transform '《cry》-  日向文'
+2023-01-01T06:25:46.942Z INFO  [voiceload] [1] Get information about av600924585
+2023-01-01T06:25:47.077Z INFO  [voiceload] [0] Finish transforming '《cry》-  日向文'
+2023-01-01T06:25:47.126Z INFO  [voiceload] [1] Downloading av600924585
+2023-01-01T06:25:50.151Z INFO  [voiceload] [1] id = av600924585 finish download
+2023-01-01T06:25:50.151Z INFO  [voiceload] [2] bvid = BV1u8411H7yA starting to work
+2023-01-01T06:25:50.152Z INFO  [voiceload] [2] Get information about BV1u8411H7yA
+2023-01-01T06:25:50.151Z INFO  [voiceload] [1] Starting transform '万元内最强轻薄本？全新改款的M2 MacBook Air值得买吗？'        
+2023-01-01T06:25:50.322Z INFO  [voiceload] [2] Downloading BV1u8411H7yA
+2023-01-01T06:25:50.340Z INFO  [voiceload] [1] Finish transforming '万元内最强轻薄本？全新改款的M2 MacBook Air值得买吗？'
+2023-01-01T06:25:51.068Z INFO  [voiceload] [2] Starting transform '【中日歌词 官方MV】「若能化作星座」结束乐队／ tvアニメ「孤独
+摇滚」第12話劇中曲'
+2023-01-01T06:25:51.068Z INFO  [voiceload] [2] id = BV1u8411H7yA finish download
+2023-01-01T06:25:51.069Z INFO  [voiceload] [3] bvid = BV138411j7bi starting to work
+2023-01-01T06:25:51.069Z INFO  [voiceload] [3] Get information about BV138411j7bi
+2023-01-01T06:25:51.212Z INFO  [voiceload] [2] Finish transforming '【中日歌词 官方MV】「若能化作星座」结束乐队／ tvアニメ「孤独摇滚」第12話劇中曲'
+2023-01-01T06:25:51.241Z INFO  [voiceload] [3] Downloading BV138411j7bi
+2023-01-01T06:25:53.054Z INFO  [voiceload] [3] id = BV138411j7bi finish download
+2023-01-01T06:25:53.054Z INFO  [voiceload] [4] bvid = BV1o3411S7KG starting to work
+2023-01-01T06:25:53.054Z INFO  [voiceload] [3] Starting transform 'ドライフラワー（干花）'
+2023-01-01T06:25:53.054Z INFO  [voiceload] [4] Get information about BV1o3411S7KG
+2023-01-01T06:25:53.177Z INFO  [voiceload] [3] Finish transforming 'ドライフラワー（干花）'
+2023-01-01T06:25:53.252Z INFO  [voiceload] [4] Downloading BV1o3411S7KG
+2023-01-01T06:25:55.052Z INFO  [voiceload] [4] id = BV1o3411S7KG finish download
+2023-01-01T06:25:55.052Z INFO  [voiceload] [4] Starting transform '【APEX 三明治】GPS高精度定位空爆雷开团，虎雷的威慑力！！'    
+2023-01-01T06:25:55.053Z INFO  [voiceload] [5] bvid = BV1rR4y1D7di starting to work
+2023-01-01T06:25:55.053Z INFO  [voiceload] [5] Get information about BV1rR4y1D7di
+2023-01-01T06:25:55.222Z INFO  [voiceload] [5] Downloading BV1rR4y1D7di
+2023-01-01T06:25:55.237Z INFO  [voiceload] [4] Finish transforming '【APEX 三明治】GPS高精度定位空爆雷开团，虎雷的威慑力！！'   
+2023-01-01T06:25:56.404Z INFO  [voiceload] [5] id = BV1rR4y1D7di finish download
+2023-01-01T06:25:56.404Z INFO  [voiceload] [6] bvid = BV1qY41127xB starting to work
+2023-01-01T06:25:56.404Z INFO  [voiceload] [5] Starting transform 'そして花になる（然后成为花）'
+2023-01-01T06:25:56.404Z INFO  [voiceload] [6] Get information about BV1qY41127xB
+2023-01-01T06:25:56.554Z INFO  [voiceload] [5] Finish transforming 'そして花になる（然后成为花）'
+2023-01-01T06:25:56.561Z INFO  [voiceload] [6] Downloading BV1qY41127xB
+2023-01-01T06:25:58.164Z INFO  [voiceload] [6] id = BV1qY41127xB finish download
+2023-01-01T06:25:58.164Z INFO  [voiceload] [6] Starting transform '【ずっと真夜中でいいのに。】Spotify “Go Stream” Live'        
+2023-01-01T06:25:58.458Z INFO  [voiceload] [6] Finish transforming '【ずっと真夜中でいいのに。】Spotify “Go Stream” Live'
+2023-01-01T06:25:58.458Z INFO  [voiceload] Total costs: 11.6622787s
