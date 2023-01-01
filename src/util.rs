@@ -1,7 +1,9 @@
 #![allow(dead_code)]
 
-use anyhow::Result;
+use anyhow::{Context, Result};
+use once_cell::sync::Lazy;
 use regex::Regex;
+use reqwest::Url;
 use std::{fs::File, io::Read, path::Path, str::FromStr};
 
 pub fn get_env_str(name: &str) -> Option<String> {
@@ -41,14 +43,36 @@ pub fn read_file_string(path: &str) -> Result<String> {
     Ok(contents)
 }
 
-pub fn safe_filename(filename: &str) -> String {
-    let invalid = Regex::new(r#"[?|_|*|<|>|\|、|/|"]"#).unwrap();
-
-    invalid.replace_all(filename, " ").to_string()
+pub fn is_link(input: &str) -> Result<Url> {
+    Url::parse(input).context("input is not a link")
 }
 
+static SAFE_FILENAME: Lazy<Regex> = Lazy::new(|| Regex::new(r#"[?|_|*|<|>|\|、|/|"]"#).unwrap());
+
+pub fn safe_filename(filename: &str) -> String {
+    SAFE_FILENAME.replace_all(filename, " ").to_string()
+}
+
+static IS_ID: Lazy<Regex> = Lazy::new(|| Regex::new(r"^(bv.{10}|(av)?\d{1,10})$").unwrap());
+
+pub fn is_id(input: &str) -> bool {
+    IS_ID.is_match(&input.trim().to_ascii_lowercase())
+}
 
 #[test]
 fn test_filename() {
-    assert_eq!("ABC123 q w e r t y u i o".to_string(), safe_filename("ABC123?q_w*e<r>t|y\"u、i/o"));
+    assert_eq!(
+        "ABC123 q w e r t y u i o".to_string(),
+        safe_filename("ABC123?q_w*e<r>t|y\"u、i/o")
+    );
+}
+
+#[test]
+fn test_is_link() {
+    // println!("{:?}", is_link("www.baidu.com"));
+    // println!("{:?}", is_link("www.baidu.com/a/b/c"));
+    println!("{:?}", is_link("https://api.bilibili.com/abc?s=2#23"));
+    // println!("{:?}", is_link("/etc/passwd"));
+    // println!("{:?}", is_link("./test.txt"));
+    // println!("{:?}", is_link("a/b/c/ffmpeg.exe"));
 }

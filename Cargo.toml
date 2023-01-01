@@ -1,6 +1,6 @@
 [package]
 name = "voiceload"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["SilentE <silenteags@gmail.com>"]
 description = "A simple cli tool for downloading audio in bilibili."
@@ -12,10 +12,10 @@ members = ["./", "vl"]
 
 [dependencies]
 once_cell = "1.16.0"
-reqwest = "0.11.13"
+reqwest = { version = "0.11.13", features = ["blocking"] }
 clap = { version = "4.0.32", features = ["derive"] }
 vl = { path = "./vl" }
-anyhow = "1.0"
+anyhow = { version = "1.0", features = ["backtrace"] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tokio = {version = "1.23.0", features = ["rt-multi-thread"]}

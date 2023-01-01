@@ -1,8 +1,5 @@
 #![allow(dead_code)]
 
-use crate::util::get_env;
-use crate::util::get_env_bool;
-
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -12,22 +9,33 @@ pub static ENV_FILE: Lazy<String> = Lazy::new(|| match std::env::var("ENV_FILE")
     Err(_) => ".env".to_string(),
 });
 
+/// $action:
+/// - default
+/// - option
+/// - none
+///
+/// $editable: enable to set value to this field
+/// - true:
+/// - false
+///
 macro_rules! generate_config {
     ($(
         $(#[doc = $doc:literal])+
-        $name:ident : $ty:ident, $editable:literal, $none_action:ident $(, $default:expr)?;
+        $name:ident : $ty:ty, $editable:literal, $action:ident $(, $default:expr)?;
     )+) => {
+        use crate::util::get_env;
+        // use crate::util::get_env_bool;
 
         #[derive(Serialize, Deserialize, Debug)]
         pub struct ConfigItems {
             $(
-                $name: generate_config!(@type $ty, $none_action),
+                $name: generate_config!(@type $ty, $action),
             )+
         }
 
         impl ConfigItems {
             $(
-                pub fn $name(&self) -> generate_config!(@type $ty, $none_action) {
+                pub fn $name(&self) -> generate_config!(@type $ty, $action) {
                     self.$name.clone()
                 }
             )+
@@ -39,7 +47,7 @@ macro_rules! generate_config {
         impl Display for ConfigItems {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
                 $(
-                    write!(f, "\n\x1b[32m[*]\x1b[0m {} => {}", stringify!($name), self.$name).unwrap();
+                    write!(f, "\n\x1b[32m[*]\x1b[0m {} => {:?}", stringify!($name), self.$name).unwrap();
                 )+
                 Ok(())
             }
@@ -85,7 +93,7 @@ macro_rules! generate_config {
                 let mut count: usize = 0;
                 $(
                     count += 1;
-                    info.insert(stringify!($name).to_string(), BuilderItemInfo::new(stringify!($name), "defalut"));
+                    info.insert(stringify!($name).to_string(), BuilderItemInfo::new(stringify!($name), "none"));
                 )+
                 ConfigBuilder {
                     item_count: count,
@@ -102,9 +110,11 @@ macro_rules! generate_config {
             $(
                 pub fn $name(&mut self, val: Option<$ty>) -> &mut Self {
                     if let Some(val) = val {
-                        self.builder_items.$name = Some(val);
-                        self.builder_item_info_map.insert(stringify!($name).to_string(),
-                        BuilderItemInfo::new(stringify!($name), "set"));
+                        if $editable {
+                            self.builder_items.$name = Some(val);
+                            self.builder_item_info_map.insert(stringify!($name).to_string(),
+                            BuilderItemInfo::new(stringify!($name), "set"));
+                        }
                     }
                     self
                 }
@@ -113,10 +123,12 @@ macro_rules! generate_config {
             pub fn from_env() -> anyhow::Result<Self> {
                 let mut cfg: ConfigBuilder = ConfigBuilder::new();
                 $(
-                    if let Some(value) = generate_config!(@getenv &stringify!($name).to_uppercase(), $ty) {
-                        cfg.builder_items.$name = Some(value);
-                        cfg.builder_item_info_map.insert(stringify!($name).to_string(),
-                        BuilderItemInfo::new(stringify!($name), "env"));
+                    if stringify!($action) != "none" {
+                        if let Some(value) = generate_config!(@getenv &stringify!($name).to_uppercase(), $action, $ty) {
+                            cfg.builder_items.$name = Some(value);
+                            cfg.builder_item_info_map.insert(stringify!($name).to_string(),
+                            BuilderItemInfo::new(stringify!($name), "env"));
+                        }
                     }
                 )+
                 Ok(cfg)
@@ -140,8 +152,6 @@ macro_rules! generate_config {
                 )+
                 Ok(cfg)
             }
-
-            
 
             pub fn _to_file(&self) {
                 todo!();
@@ -174,7 +184,7 @@ macro_rules! generate_config {
             pub fn build(&self) -> ConfigItems {
                 ConfigItems {
                     $(
-                        $name: generate_config!(@build self.builder_items.$name.clone(), $none_action $(, $default)?),
+                        $name: generate_config!(@build self.builder_items.$name.clone(), $action $(, $default)?),
                     )+
                 }
             }
@@ -183,51 +193,39 @@ macro_rules! generate_config {
         /// Load default config vars
         impl Default for ConfigBuilder {
             fn default() -> Self {
-                let mut info = HashMap::new();
-                let mut count: usize = 0;
-                $(
-                    count += 1;
-                    info.insert(stringify!($name).to_string(), BuilderItemInfo::new(stringify!($name), "defalut"));
-                )+
-                ConfigBuilder {
-                    item_count: count,
-                    builder_item_info_map: info,
-                    builder_items: BuilderItems {
-                        $(
-                            $name: generate_config!(@init $ty $(, $default)?),
-                        )+
-                    }
-                }
+                ConfigBuilder::new()
             }
         }
     };
 
-    (@type $ty:ident, option) => { Option<$ty> };
-    (@type $ty:ident, $id:ident) => { $ty };
+    (@type $ty:ty, option) => { Option<$ty> };
+    (@type $ty:ty, $id:ident) => { $ty };
 
-    (@build $value:expr, option) => { $value };
-    (@build $value:expr, def, $default:expr) => { $value.unwrap_or($default) };
+    (@build $value:expr, none) => { $value.unwrap() };
+    (@build $value:expr, $action: ident) => { $value };
+    (@build $value:expr, $action: ident, $default:expr) => { $value.unwrap_or($default) };
 
-    (@init $ty:ident) => { None };
-    (@init $ty:ident, $default:expr) => { Some($default) };
+    (@init $ty:ty) => { None };
+    (@init $ty:ty, $default:expr) => { Some($default) };
 
-    (@getenv $name:expr, bool) => { get_env_bool($name) };
-    (@getenv $name:expr, $ty:ident) => { get_env($name) };
+    (@getenv $name:expr, none, $ty:ty) => { None };
+    (@getenv $name:expr, $action: ident, bool) => { get_env_bool($name) };
+    (@getenv $name:expr, $action: ident, $ty:ty) => { get_env($name) };
 }
 
 generate_config! {
-    /// Aid/Bvids to download, space for split.
-    id: String, true, def, "".to_string();
+    /// All ids to download.
+    id: Vec<String>, true, none;
     /// Allow downloading flac.
-    flac_allowed: bool, true, def, false;
+    flac_allowed: bool, true, default, false;
     /// Allow downloading dolby.
-    dolby_allowed: bool, true, def, false;
+    dolby_allowed: bool, true, default, false;
     /// Allow adding picture to audio.
-    pic_allowed: bool, true, def, false;
+    pic_allowed: bool, true, default, false;
     /// Path to save audio files.
-    path: String, true, def, "./".to_string();
+    path: String, true, default, "./".to_string();
     /// File name.
-    filename: String, true, def, "".to_string();
+    filename: String, true, default, "".to_string();
     /// Session.
-    session: String, true, def, "".to_string();
+    session: String, true, default, "".to_string();
 }
