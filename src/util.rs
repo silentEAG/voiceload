@@ -68,11 +68,7 @@ fn test_filename() {
 }
 
 #[test]
-fn test_is_link() {
-    // println!("{:?}", is_link("www.baidu.com"));
-    // println!("{:?}", is_link("www.baidu.com/a/b/c"));
-    println!("{:?}", is_link("https://api.bilibili.com/abc?s=2#23"));
-    // println!("{:?}", is_link("/etc/passwd"));
-    // println!("{:?}", is_link("./test.txt"));
-    // println!("{:?}", is_link("a/b/c/ffmpeg.exe"));
+fn test_url() {
+    let url = Url::parse("http://evil.com1232\\@i.ibb.co/1.png").unwrap();
+    println!("{url:?}");
 }

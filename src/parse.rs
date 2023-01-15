@@ -82,7 +82,7 @@ fn parse_link(link: Url) -> Option<String> {
     match link.host_str() {
         Some("www.bilibili.com") => get_bv(link),
         Some("b23.tv") => {
-            match PARSE_CILENT.get(link).send().map(|response| {
+            match PARSE_CILENT.head(link).send().map(|response| {
                 let headers = response.headers();
                 if let Some(link_str) = headers.get(header::LOCATION) {
                     let link_str = link_str.to_str().unwrap();
@@ -178,10 +178,3 @@ pub static SESSION: Lazy<HeaderMap> = Lazy::new(|| {
     );
     headers
 });
-
-#[test]
-fn test_parse_url() {
-    let url = Url::parse("https://www.bilibili.com/a/b/c").unwrap();
-    println!("{:?}", url.host_str());
-    println!("{:?}", url.path_segments().unwrap().collect::<Vec<&str>>());
-}

@@ -164,10 +164,11 @@ pub async fn run() {
     });
 
     for (index, id) in ids.iter().enumerate() {
-        info!("[{index}] bvid = {id} starting to work");
+        let index = index + 1;
+
+        info!("[{index}] id = {id} starting to work");
 
         if let Err(e) = run_one_by_one(index, id, tx.clone()).await {
-            eprintln!("{}", e.backtrace());
             error!(
                 "[{index}] Error occurs when viewing or downloading audio: {}",
                 e.source().unwrap()

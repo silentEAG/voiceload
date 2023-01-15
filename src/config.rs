@@ -9,7 +9,7 @@ pub static ENV_FILE: Lazy<String> = Lazy::new(|| match std::env::var("ENV_FILE")
     Err(_) => ".env".to_string(),
 });
 
-/// $action:
+/// $action: decide the how to deal with it
 /// - default
 /// - option
 /// - none
@@ -23,6 +23,7 @@ macro_rules! generate_config {
         $(#[doc = $doc:literal])+
         $name:ident : $ty:ty, $editable:literal, $action:ident $(, $default:expr)?;
     )+) => {
+        use anyhow::Context;
         use crate::util::get_env;
         // use crate::util::get_env_bool;
 
@@ -141,7 +142,7 @@ macro_rules! generate_config {
                 if !PathBuf::from(path).exists() {
                     return Err(anyhow::Error::msg("File not exists"));
                 }
-                let config_str = read_file_string(path).expect("Read file failed.");
+                let config_str = read_file_string(path).context("Read file failed.")?;
                 let items: BuilderItems = serde_json::from_str(&config_str)?;
                 $(
                     if let Some(value) = items.$name {

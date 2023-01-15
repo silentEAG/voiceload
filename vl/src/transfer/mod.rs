@@ -1,6 +1,5 @@
-
-use std::process::Command;
 use anyhow::Result;
+use std::process::Command;
 
 fn vec_to_string(v: Vec<u8>) -> String {
     String::from_utf8(v).unwrap().trim().to_string()
@@ -12,7 +11,8 @@ fn excute(args: &[&str]) -> Result<String> {
         true => Ok(vec_to_string(out.stdout)),
         false => Err(anyhow::Error::msg(format!(
             "Command not successful. This is stderr:\n{}",
-            vec_to_string(out.stderr)))),
+            vec_to_string(out.stderr)
+        ))),
     }
 }
 
@@ -22,8 +22,14 @@ static FFMPET: &str = "./ffmpeg.exe";
 #[cfg(target_os = "linux")]
 static FFMPET: &str = "./ffmpeg";
 
-pub async fn run(source: &str, output: &str, pic: Option<&str>, extension: &str, title: &str, artist: &str) -> Result<()> {
-    
+pub async fn run(
+    source: &str,
+    output: &str,
+    pic: Option<&str>,
+    extension: &str,
+    title: &str,
+    artist: &str,
+) -> Result<()> {
     let title = &format!("title={title}");
     let artist = &format!("artist={artist}");
 
@@ -31,7 +37,6 @@ pub async fn run(source: &str, output: &str, pic: Option<&str>, extension: &str,
 
     if pic.is_some() {
         input_arg.append(&mut vec!["-i", pic.unwrap()]);
-
     }
 
     input_arg.append(&mut vec!["-metadata", title]);
@@ -40,16 +45,21 @@ pub async fn run(source: &str, output: &str, pic: Option<&str>, extension: &str,
     match extension {
         "flac" => input_arg.append(&mut vec!["-acodec", "flac"]),
         "m4a" => input_arg.append(&mut vec!["-c", "copy"]),
-        _ => panic!("Should not happened!")
+        _ => panic!("Should not happened!"),
     }
 
     if pic.is_some() {
-        input_arg.append(&mut vec!["-c:v:1", "jpg", "-disposition:v:0", "attached_pic"]);
+        input_arg.append(&mut vec![
+            "-c:v:1",
+            "jpg",
+            "-disposition:v:0",
+            "attached_pic",
+        ]);
     }
 
     input_arg.push(output);
 
     excute(&input_arg)?;
-    
+
     Ok(())
 }
